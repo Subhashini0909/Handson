@@ -47,59 +47,78 @@ public class MakeMyTrip {
 		
 	}
 	
-	String formatted_Dept_date;
-	public void DeptDate() throws InterruptedException
-	{
-		driver.findElement(By.className("DayPicker-Months"));
-		
-//Getting user input
-		Scanner from_input = new Scanner(System.in);
-		System.out.print("Enter departure date in EEE MMM dd yyyy format : ");
-		String Dept_date = from_input.nextLine();
-		DateTimeFormatter Dept_date_format = DateTimeFormatter.ofPattern("EEE MMM dd yyyy");
-		formatted_Dept_date = Dept_date.formatted(Dept_date_format);
-		
+LocalDate deptDate;
 	
-//Format Today's date(only day part)
-		LocalDate Today_Date = LocalDate.now();
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("EEE MMM dd yyyy");
-		String formatted = Today_Date.format(format);
+	public void DeptDate() throws InterruptedException {
+		driver.findElement(By.className("DayPicker-Months"));
+
+//USER INPUT
+		System.out.print("Enter departure date in Mon Apr 15 2024 format : ");
+		Scanner sc_dept = new Scanner(System.in);
+		String Dept_date = sc_dept.nextLine();
+
+//Formatting(EEE MMM dd yyyy) and parsing 
+		DateTimeFormatter DeptDate_format = DateTimeFormatter.ofPattern("EEE MMM dd yyyy");
+		 deptDate = LocalDate.parse(Dept_date, DeptDate_format);
+		 	//System.out.println("User entered date : " +deptDate);
+	
+//Formatted as per the format in DeptDate_format(EEE MMM dd yyyy) 
+		 String formatted_Dept_date = Dept_date.formatted(DeptDate_format);
+		 	//System.out.println(formatted_Dept_date);
 		
-		if(formatted.compareTo(formatted_Dept_date)<=0)
-		{
-			System.err.println("Enter date from the current date");
-		}
-		else
+//Today's Date		
+		LocalDate Today_Date = LocalDate.now();
+			//System.out.println("Today's date : " +Today_Date);
+		
+		if(deptDate.isAfter(Today_Date))
 		{
 			driver.findElement(By.xpath(String.format("//div[contains(@aria-label,'%s')]", formatted_Dept_date))).click();
 		}
-	}
-	
-	public void ReturnDate()
+		else
 		{
-		Scanner sc1 = new Scanner(System.in);
-		System.out.print("Enter return date in EEE MMM dd yyyy format : ");
-		String return_date = sc1.nextLine();
-		DateTimeFormatter return_date_format = DateTimeFormatter.ofPattern("EEE MMM dd yyyy");
-		String formatter_return_date = return_date.formatted(return_date_format);
+			System.err.println("Enter date from the current date");
+		}
+	}
+
+//	   
+	// ReturnDate method
+	public void ReturnDate() 
+	{
+//User Input
+		System.out.print("Enter return date in Mon Apr 15 2024 format : ");
+		Scanner sc_return = new Scanner(System.in);
+		String return_date = sc_return.nextLine();
+
+//Formatting(EEE MMM dd yyyy) and parsing 
+		DateTimeFormatter ReturnDate_format = DateTimeFormatter.ofPattern("EEE MMM dd yyyy");
+		LocalDate ReturnDate = LocalDate.parse(return_date, ReturnDate_format);
+			//System.out.println(ReturnDate);
+		String formatted_Return_date = return_date.formatted(ReturnDate_format);
 		
 		driver.findElement(By.xpath("//div[@data-cy = 'returnArea']")).click();
-		if(formatted_Dept_date.compareTo(formatter_return_date)<=0)
-			{
-			driver.findElement(By.xpath(String.format("//div[contains(@aria-label,'%s')]", formatter_return_date))).click();
-			}
-		else
-			{
-			System.err.println("Enter date should be greater than the current date");
-			}
 		
+		if(ReturnDate.isBefore(deptDate))
+		{
+			System.err.println("Invalid return date");
 		}
-	
-	public void search()
-	{
-		driver.findElement(By.partialLinkText("Search")).click();
+		else
+		{
+			driver.findElement(By.xpath(String.format("//div[contains(@aria-label,'%s')]", formatted_Return_date))).click();
+		}
 	}
 	
+	public void search() throws InterruptedException
+	{
+		driver.findElement(By.xpath("//p//a[text()='Search']")).click();
+		Thread.sleep(5000);
+	}
+	
+	public void navigated() //Currently when navigated it's getting network issue
+	{
+		WebElement LockPrice_Overlay = driver.findElement(By.className("commonOverlay "));
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+		wait.until(ExpectedConditions.visibilityOf(LockPrice_Overlay));
+	}
 	public void quit()
 	{
 		driver.quit();
@@ -112,6 +131,8 @@ public class MakeMyTrip {
 		trip.to();
 		trip.DeptDate();
 		trip.ReturnDate();
-		//trip.quit();
+		trip.search();
+		//trip.navigated();
+		trip.quit();
 	}
 }
