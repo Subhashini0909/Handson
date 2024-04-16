@@ -24,26 +24,22 @@ public class GitHub_Contribution_Count {
 		driver.manage().window().maximize();
 		driver.get(URL);
 		
-		
-		
-//		JavascriptExecutor jse = (JavascriptExecutor)driver;
-//		jse.executeScript("window.scrollBy(0,document.body.scrollHeight)");
-		
-		//driver.findElement(By.id("year-link-2024"));
-		
-		
+	//Implicit wait
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 		List<WebElement> contri= driver.findElements(By.xpath("//td[@aria-describedby='contribution-graph-legend-level-4']"));
 	
 	//Explicit Wait
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-		wait.until(ExpectedConditions.visibilityOfAllElements(contri));
+		//WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+		//wait.until(ExpectedConditions.visibilityOfAllElements(contri));
+		
+	
 		System.out.println("You have contributed on the following date's in 2024 : ");
 		
 		for(WebElement Contribution : contri)
 		{
 			
 			String c_2024 = Contribution.getAttribute("data-date");
-			System.out.println(c_2024);
+			//System.out.println(c_2024);
 		}
 		
 		int Total_Contriubtions = contri.size();
